@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/layout/Sidebar';
+import Navbar from './components/layout/Navbar';
 import ChatWidget from './components/chat/ChatWidget';
 import Dashboard from './pages/Dashboard';
 import ContentList from './pages/ContentList';
@@ -11,8 +11,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-[#FAFAFA]">
-        <Sidebar />
-        <main className="ml-56 p-8">
+        <Navbar />
+        <main style={{ paddingTop: '96px', paddingLeft: '40px', paddingRight: '40px', paddingBottom: '40px' }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/content" element={<ContentList />} />

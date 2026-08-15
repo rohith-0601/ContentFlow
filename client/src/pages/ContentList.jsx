@@ -71,23 +71,42 @@ export default function ContentList() {
         description="Manage content assets and track approval workflows"
         actions={
           <Button onClick={() => setShowCreate(true)}>
-            <Plus size={16} />
+            <Plus size={15} />
             New Asset
           </Button>
         }
       />
 
       {/* Status filter */}
-      <div className="flex items-center gap-2 mb-6">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '24px' }}>
         {statuses.map((s) => (
           <button
             key={s || 'all'}
             onClick={() => setFilterStatus(s)}
-            className={`text-sm px-3 py-1.5 rounded transition-colors duration-150 ${
-              filterStatus === s
-                ? 'bg-[#3B4A6B] text-white'
-                : 'text-[#737373] hover:bg-[#F5F5F5] hover:text-[#171717]'
-            }`}
+            style={{
+              fontSize: '13px',
+              fontWeight: 500,
+              fontFamily: "'Inter', sans-serif",
+              padding: '6px 14px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              backgroundColor: filterStatus === s ? '#171717' : 'transparent',
+              color: filterStatus === s ? '#FFFFFF' : '#737373',
+            }}
+            onMouseEnter={(e) => {
+              if (filterStatus !== s) {
+                e.target.style.backgroundColor = '#F5F5F5';
+                e.target.style.color = '#171717';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (filterStatus !== s) {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = '#737373';
+              }
+            }}
           >
             {s || 'All'}
           </button>
@@ -95,47 +114,48 @@ export default function ContentList() {
       </div>
 
       {/* Assets table */}
-      <Card padding={false}>
+      <Card padding={false} className="animate-fade-in">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <p className="text-sm text-[#737373]">Loading...</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
+            <p className="micro-label">Loading...</p>
           </div>
         ) : assets.length === 0 ? (
-          <div className="flex items-center justify-center py-12">
-            <p className="text-sm text-[#737373]">No content assets found.</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
+            <p style={{ fontSize: '14px', color: '#737373' }}>No content assets found.</p>
           </div>
         ) : (
-          <table className="w-full">
+          <table>
             <thead>
-              <tr className="border-b border-[#E5E5E5]">
-                <th className="text-left text-xs font-medium text-[#737373] uppercase tracking-wider px-5 py-3">Title</th>
-                <th className="text-left text-xs font-medium text-[#737373] uppercase tracking-wider px-5 py-3">Status</th>
-                <th className="text-left text-xs font-medium text-[#737373] uppercase tracking-wider px-5 py-3">Owner</th>
-                <th className="text-left text-xs font-medium text-[#737373] uppercase tracking-wider px-5 py-3">Updated</th>
-                <th className="text-right text-xs font-medium text-[#737373] uppercase tracking-wider px-5 py-3">Actions</th>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Owner</th>
+                <th>Updated</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5E5E5]">
+            <tbody>
               {assets.map((asset) => (
-                <tr
-                  key={asset._id}
-                  className="hover:bg-[#FAFAFA] transition-colors duration-150"
-                >
-                  <td className="px-5 py-3">
-                    <p className="text-sm font-medium text-[#171717]">{asset.title}</p>
-                    <p className="text-xs text-[#A3A3A3] mt-0.5 line-clamp-1">{asset.body}</p>
+                <tr key={asset._id}>
+                  <td>
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: '#171717' }}>{asset.title}</p>
+                    <p style={{ fontSize: '12px', color: '#A3A3A3', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '300px' }}>
+                      {asset.body}
+                    </p>
                   </td>
-                  <td className="px-5 py-3">
+                  <td>
                     <StatusBadge status={asset.status} />
                   </td>
-                  <td className="px-5 py-3">
-                    <span className="text-sm text-[#525252]">{asset.owner}</span>
+                  <td>
+                    <span style={{ fontSize: '14px', color: '#525252' }}>{asset.owner}</span>
                   </td>
-                  <td className="px-5 py-3">
-                    <span className="text-sm text-[#737373]">{formatDate(asset.updatedAt)}</span>
+                  <td>
+                    <span style={{ fontSize: '13px', color: '#737373', fontVariantNumeric: 'tabular-nums' }}>
+                      {formatDate(asset.updatedAt)}
+                    </span>
                   </td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center justify-end gap-1">
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '2px' }}>
                       <Button
                         variant="ghost"
                         size="xs"
@@ -171,43 +191,41 @@ export default function ContentList() {
 
       {/* Create modal */}
       <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="New Content Asset">
-        <form onSubmit={handleCreate} className="space-y-4">
+        <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="block text-sm font-medium text-[#171717] mb-1">Title</label>
+            <label htmlFor="create-title">Title</label>
             <input
               type="text"
               required
               value={createForm.title}
               onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
-              className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
               placeholder="Enter asset title"
               id="create-title"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#171717] mb-1">Owner</label>
+            <label htmlFor="create-owner">Owner</label>
             <input
               type="text"
               required
               value={createForm.owner}
               onChange={(e) => setCreateForm({ ...createForm, owner: e.target.value })}
-              className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
               placeholder="Assigned owner"
               id="create-owner"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#171717] mb-1">Body</label>
+            <label htmlFor="create-body">Body</label>
             <textarea
               value={createForm.body}
               onChange={(e) => setCreateForm({ ...createForm, body: e.target.value })}
               rows={4}
-              className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150 resize-none"
               placeholder="Content body..."
               id="create-body"
+              style={{ resize: 'none' }}
             />
           </div>
-          <div className="flex justify-end gap-2 pt-2">
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', paddingTop: '4px' }}>
             <Button variant="secondary" onClick={() => setShowCreate(false)}>
               Cancel
             </Button>

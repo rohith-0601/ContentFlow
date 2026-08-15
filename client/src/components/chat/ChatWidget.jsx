@@ -78,24 +78,76 @@ export default function ChatWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 bg-[#3B4A6B] text-white text-sm font-medium rounded hover:bg-[#4A5B80] transition-colors duration-150"
           id="chat-toggle"
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 16px',
+            backgroundColor: '#171717',
+            color: '#FFFFFF',
+            fontSize: '13px',
+            fontWeight: 500,
+            fontFamily: "'Inter', sans-serif",
+            borderRadius: '6px',
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: '2px 2px 6px rgba(0,0,0,0.04), -1px -1px 3px rgba(255,255,255,0.6)',
+            transition: 'all 0.15s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#2D2D2D';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#171717';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
         >
-          <MessageSquare size={16} />
+          <MessageSquare size={15} />
           Assistant
         </button>
       )}
 
       {/* Chat panel */}
       {isOpen && (
-        <div className="fixed right-0 top-0 bottom-0 w-96 bg-white border-l border-[#E5E5E5] z-50 flex flex-col">
+        <div
+          className="animate-slide-right"
+          style={{
+            position: 'fixed',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: '380px',
+            backgroundColor: '#FFFFFF',
+            borderLeft: '1px solid #E5E5E5',
+            zIndex: 60,
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '-4px 0 20px rgba(0,0,0,0.04)',
+          }}
+        >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E5E5]">
-            <div className="flex items-center gap-2">
-              <MessageSquare size={16} className="text-[#3B4A6B]" />
-              <span className="text-sm font-semibold text-[#171717]">ContentFlow Assistant</span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '16px 20px',
+              borderBottom: '1px solid #E5E5E5',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MessageSquare size={15} style={{ color: '#3B4A6B' }} />
+              <span style={{ fontSize: '14px', fontWeight: 600, color: '#171717' }}>
+                ContentFlow Assistant
+              </span>
             </div>
-            <div className="flex items-center gap-1">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Button variant="ghost" size="xs" onClick={handleClear} aria-label="Clear chat">
                 <Trash2 size={14} />
               </Button>
@@ -106,39 +158,75 @@ export default function ChatWidget() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          <div
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: '16px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}
+          >
             {messages.length === 0 && (
-              <div className="text-center py-12">
-                <MessageSquare size={24} className="mx-auto mb-3 text-[#D4D4D4]" />
-                <p className="text-sm text-[#737373]">Ask about content, delays, or standup summaries.</p>
+              <div style={{ textAlign: 'center', padding: '48px 0' }}>
+                <MessageSquare size={24} style={{ margin: '0 auto 12px', color: '#D4D4D4' }} />
+                <p style={{ fontSize: '13px', color: '#737373' }}>
+                  Ask about content, delays, or standup summaries.
+                </p>
               </div>
             )}
 
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                style={{
+                  display: 'flex',
+                  justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                }}
               >
                 <div
-                  className={`max-w-[85%] text-sm rounded px-3 py-2 ${
-                    msg.role === 'user'
-                      ? 'bg-[#3B4A6B] text-white'
-                      : 'bg-[#F5F5F5] text-[#171717] border border-[#E5E5E5]'
-                  }`}
+                  style={{
+                    maxWidth: '85%',
+                    fontSize: '13px',
+                    lineHeight: 1.6,
+                    borderRadius: '8px',
+                    padding: '10px 14px',
+                    ...(msg.role === 'user'
+                      ? { backgroundColor: '#171717', color: '#FFFFFF' }
+                      : { backgroundColor: '#F5F5F5', color: '#171717', border: '1px solid #E5E5E5' }),
+                  }}
                 >
-                  <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                  <p style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
                 </div>
               </div>
             ))}
 
             {isLoading && (
-              <div className="flex justify-start">
-                <div className="bg-[#F5F5F5] border border-[#E5E5E5] rounded px-3 py-2">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 bg-[#A3A3A3] rounded-full animate-pulse" />
-                    <div className="w-1.5 h-1.5 bg-[#A3A3A3] rounded-full animate-pulse [animation-delay:150ms]" />
-                    <div className="w-1.5 h-1.5 bg-[#A3A3A3] rounded-full animate-pulse [animation-delay:300ms]" />
-                  </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                <div
+                  style={{
+                    backgroundColor: '#F5F5F5',
+                    border: '1px solid #E5E5E5',
+                    borderRadius: '8px',
+                    padding: '10px 14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  {[0, 1, 2].map((n) => (
+                    <div
+                      key={n}
+                      style={{
+                        width: '6px',
+                        height: '6px',
+                        backgroundColor: '#A3A3A3',
+                        borderRadius: '50%',
+                        animation: `pulse-dot 1.2s ease-in-out ${n * 150}ms infinite`,
+                      }}
+                    />
+                  ))}
                 </div>
               </div>
             )}
@@ -147,8 +235,8 @@ export default function ChatWidget() {
           </div>
 
           {/* Input */}
-          <div className="px-4 py-3 border-t border-[#E5E5E5]">
-            <div className="flex items-center gap-2">
+          <div style={{ padding: '12px 20px', borderTop: '1px solid #E5E5E5' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <input
                 ref={inputRef}
                 type="text"
@@ -156,8 +244,21 @@ export default function ChatWidget() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type a message..."
-                className="flex-1 text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] placeholder-[#A3A3A3] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
                 id="chat-input"
+                style={{
+                  flex: 1,
+                  fontSize: '13px',
+                  padding: '9px 12px',
+                  border: '1px solid #E5E5E5',
+                  borderRadius: '6px',
+                  backgroundColor: '#FFFFFF',
+                  color: '#171717',
+                  outline: 'none',
+                  transition: 'border-color 0.15s ease',
+                  fontFamily: "'Inter', sans-serif",
+                }}
+                onFocus={(e) => { e.target.style.borderColor = '#3B4A6B'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#E5E5E5'; }}
               />
               <Button
                 variant="primary"

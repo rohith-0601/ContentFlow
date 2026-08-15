@@ -41,19 +41,56 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-sm text-[#737373]">Loading dashboard...</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              border: '2px solid #E5E5E5',
+              borderTopColor: '#3B4A6B',
+              borderRadius: '50%',
+              margin: '0 auto 12px',
+              animation: 'spin 0.8s linear infinite',
+            }}
+          />
+          <p className="micro-label">Loading dashboard</p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-sm text-[#737373]">Failed to load dashboard data. Make sure the server is running.</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}>
+        <p style={{ fontSize: '14px', color: '#737373' }}>
+          Failed to load dashboard data. Make sure the server is running.
+        </p>
       </div>
     );
   }
+
+  const stats = [
+    {
+      label: 'Content Assets',
+      value: data.totalContent,
+      icon: FileText,
+      hasAccent: data.totalContent > 0,
+    },
+    {
+      label: 'Sprint Tasks',
+      value: data.totalTasks,
+      icon: Columns3,
+      hasAccent: data.totalTasks > 0,
+    },
+    {
+      label: 'Overdue Tasks',
+      value: data.overdueCount,
+      icon: AlertTriangle,
+      hasAccent: data.overdueCount > 0,
+    },
+  ];
 
   const contentCards = [
     { label: 'Draft', count: data.contentByStatus.Draft },
@@ -73,96 +110,164 @@ export default function Dashboard() {
     <div>
       <Header title="Dashboard" description="Overview of content and sprint progress" />
 
-      {/* Summary stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded bg-[#E8EBF0]">
-              <FileText size={16} className="text-[#3B4A6B]" />
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-[#171717]">{data.totalContent}</p>
-              <p className="text-xs text-[#737373]">Content Assets</p>
+      {/* ── Stat Cards ──────────────────────────── */}
+      <div
+        className="stagger-children"
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }}
+      >
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '6px',
+              padding: '24px',
+              borderTop: stat.hasAccent ? '2px solid #3B4A6B' : '2px solid transparent',
+              boxShadow: '2px 2px 6px rgba(0,0,0,0.04), -1px -1px 3px rgba(255,255,255,0.6)',
+              transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+              cursor: 'default',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '3px 3px 10px rgba(0,0,0,0.06), -1px -1px 4px rgba(255,255,255,0.7)';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '2px 2px 6px rgba(0,0,0,0.04), -1px -1px 3px rgba(255,255,255,0.6)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <div className="stat-number">{stat.value}</div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                marginTop: '8px',
+              }}
+            >
+              <stat.icon size={14} style={{ color: '#737373' }} />
+              <span className="micro-label">{stat.label}</span>
             </div>
           </div>
-        </Card>
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded bg-[#E8EBF0]">
-              <Columns3 size={16} className="text-[#3B4A6B]" />
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-[#171717]">{data.totalTasks}</p>
-              <p className="text-xs text-[#737373]">Sprint Tasks</p>
-            </div>
-          </div>
-        </Card>
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded bg-[#FEE2E2]">
-              <AlertTriangle size={16} className="text-[#991B1B]" />
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-[#171717]">{data.overdueCount}</p>
-              <p className="text-xs text-[#737373]">Overdue Tasks</p>
-            </div>
-          </div>
-        </Card>
+        ))}
       </div>
 
-      {/* Content by status + Tasks by column */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        <Card>
-          <h3 className="text-sm font-semibold text-[#171717] mb-4">Content by Status</h3>
-          <div className="space-y-3">
-            {contentCards.map((item) => (
-              <div key={item.label} className="flex items-center justify-between">
+      {/* ── Content by Status + Tasks by Column ── */}
+      <div
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '32px' }}
+      >
+        <Card className="animate-fade-in">
+          <h3 className="section-label" style={{ marginBottom: '16px' }}>
+            Content by Status
+          </h3>
+          <div>
+            {contentCards.map((item, i) => (
+              <div
+                key={item.label}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 0',
+                  borderBottom: i < contentCards.length - 1 ? '1px solid #F0F0F0' : 'none',
+                }}
+              >
                 <StatusBadge status={item.label} />
-                <span className="text-sm font-medium text-[#171717] tabular-nums">{item.count}</span>
+                <span
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: '#171717',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  {item.count}
+                </span>
               </div>
             ))}
           </div>
         </Card>
-        <Card>
-          <h3 className="text-sm font-semibold text-[#171717] mb-4">Tasks by Column</h3>
-          <div className="space-y-3">
-            {taskCards.map((item) => (
-              <div key={item.label} className="flex items-center justify-between">
+
+        <Card className="animate-fade-in" style={{ animationDelay: '80ms' }}>
+          <h3 className="section-label" style={{ marginBottom: '16px' }}>
+            Tasks by Column
+          </h3>
+          <div>
+            {taskCards.map((item, i) => (
+              <div
+                key={item.label}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 0',
+                  borderBottom: i < taskCards.length - 1 ? '1px solid #F0F0F0' : 'none',
+                }}
+              >
                 <StatusBadge status={item.label} />
-                <span className="text-sm font-medium text-[#171717] tabular-nums">{item.count}</span>
+                <span
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: '#171717',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  {item.count}
+                </span>
               </div>
             ))}
           </div>
         </Card>
       </div>
 
-      {/* Recent activity */}
-      <Card>
-        <h3 className="text-sm font-semibold text-[#171717] mb-4">Recent Activity</h3>
+      {/* ── Recent Activity ────────────────────── */}
+      <Card className="animate-fade-in">
+        <h3 className="section-label" style={{ marginBottom: '16px' }}>
+          Recent Activity
+        </h3>
         {data.recentActivity.length === 0 ? (
-          <p className="text-sm text-[#737373] py-4">No recent activity.</p>
+          <p style={{ fontSize: '14px', color: '#737373', padding: '16px 0' }}>
+            No recent activity.
+          </p>
         ) : (
-          <div className="divide-y divide-[#E5E5E5]">
+          <div>
             {data.recentActivity.map((entry, i) => (
-              <div key={i} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                <div className="flex items-center gap-3 min-w-0">
-                  <Clock size={14} className="text-[#A3A3A3] shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-sm text-[#171717] truncate">
-                      <span className="font-medium">{entry.changedBy}</span>
+              <div
+                key={i}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 0',
+                  borderBottom: i < data.recentActivity.length - 1 ? '1px solid #F0F0F0' : 'none',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                  <Clock size={14} style={{ color: '#A3A3A3', flexShrink: 0 }} />
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontSize: '14px', color: '#171717' }}>
+                      <span style={{ fontWeight: 600 }}>{entry.changedBy}</span>
                       {' changed '}
-                      <span className="font-medium">{entry.assetTitle}</span>
+                      <span style={{ color: '#525252' }}>{entry.assetTitle}</span>
                     </p>
                     {entry.comment && (
-                      <p className="text-xs text-[#737373] mt-0.5 truncate">
+                      <p style={{ fontSize: '12px', color: '#737373', marginTop: '2px' }}>
                         {entry.comment}
                       </p>
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0 ml-4">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, marginLeft: '16px' }}>
                   <StatusBadge status={entry.status} size="xs" />
-                  <span className="text-xs text-[#A3A3A3] whitespace-nowrap">
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      color: '#A3A3A3',
+                      whiteSpace: 'nowrap',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
                     {formatTime(entry.timestamp)}
                   </span>
                 </div>

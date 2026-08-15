@@ -1,32 +1,48 @@
-const STATUS_CONFIG = {
+const DOT_COLORS = {
   // Content statuses
-  Draft: { bg: 'bg-[#F5F5F5]', text: 'text-[#525252]', border: 'border-[#D4D4D4]' },
-  'In Review': { bg: 'bg-[#DBEAFE]', text: 'text-[#1E40AF]', border: 'border-[#93C5FD]' },
-  Approved: { bg: 'bg-[#EDF2EF]', text: 'text-[#2F4F3E]', border: 'border-[#A7C4B5]' },
-  Published: { bg: 'bg-[#E8EBF0]', text: 'text-[#3B4A6B]', border: 'border-[#9AA5BD]' },
+  Draft: '#737373',
+  'In Review': '#B8860B',
+  Approved: '#3B4A6B',
+  Published: '#2F4F3E',
 
   // Priority levels
-  Low: { bg: 'bg-[#F5F5F5]', text: 'text-[#525252]', border: 'border-[#D4D4D4]' },
-  Medium: { bg: 'bg-[#FEF3C7]', text: 'text-[#92400E]', border: 'border-[#FCD34D]' },
-  High: { bg: 'bg-[#FEE2E2]', text: 'text-[#991B1B]', border: 'border-[#FCA5A5]' },
+  Low: '#737373',
+  Medium: '#B8860B',
+  High: '#DC2626',
 
-  // Columns
-  Backlog: { bg: 'bg-[#F5F5F5]', text: 'text-[#525252]', border: 'border-[#D4D4D4]' },
-  'In Progress': { bg: 'bg-[#DBEAFE]', text: 'text-[#1E40AF]', border: 'border-[#93C5FD]' },
-  QA: { bg: 'bg-[#FEF3C7]', text: 'text-[#92400E]', border: 'border-[#FCD34D]' },
-  Done: { bg: 'bg-[#EDF2EF]', text: 'text-[#2F4F3E]', border: 'border-[#A7C4B5]' },
+  // Sprint columns
+  Backlog: '#737373',
+  'In Progress': '#B8860B',
+  QA: '#3B4A6B',
+  Done: '#2F4F3E',
 };
 
 export default function StatusBadge({ status, size = 'sm' }) {
-  const config = STATUS_CONFIG[status] || STATUS_CONFIG.Draft;
-  const sizeClasses = size === 'xs'
-    ? 'text-[11px] px-1.5 py-0.5'
-    : 'text-xs px-2 py-0.5';
+  const dotColor = DOT_COLORS[status] || '#737373';
+  const dotSize = size === 'xs' ? '5px' : '6px';
+  const fontSize = size === 'xs' ? '10px' : '11px';
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded ${config.bg} ${config.text} border ${config.border} ${sizeClasses}`}
+      className="inline-flex items-center"
+      style={{
+        gap: '6px',
+        fontSize,
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.03em',
+        color: '#171717',
+      }}
     >
+      <span
+        style={{
+          width: dotSize,
+          height: dotSize,
+          borderRadius: '50%',
+          backgroundColor: dotColor,
+          flexShrink: 0,
+        }}
+      />
       {status}
     </span>
   );

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import Button from './Button';
 
-export default function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-lg' }) {
+export default function Modal({ isOpen, onClose, title, children, maxWidth = '520px' }) {
   const overlayRef = useRef(null);
 
   useEffect(() => {
@@ -31,16 +31,48 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
-      className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] bg-black/40"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        paddingTop: '12vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      }}
     >
-      <div className={`bg-white border border-[#E5E5E5] rounded w-full ${maxWidth} mx-4 animate-in`}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E5E5]">
-          <h2 className="text-base font-semibold text-[#171717]">{title}</h2>
+      <div
+        className="animate-fade-in-up"
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '8px',
+          width: '100%',
+          maxWidth,
+          margin: '0 16px',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 20px',
+            borderBottom: '1px solid #E5E5E5',
+          }}
+        >
+          <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#171717' }}>
+            {title}
+          </h2>
           <Button variant="ghost" size="xs" onClick={onClose} aria-label="Close modal">
             <X size={16} />
           </Button>
         </div>
-        <div className="px-5 py-4">
+
+        {/* Body */}
+        <div style={{ padding: '20px' }}>
           {children}
         </div>
       </div>

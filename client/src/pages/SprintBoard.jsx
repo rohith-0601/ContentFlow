@@ -22,6 +22,13 @@ import Modal from '../components/ui/Modal';
 
 const COLUMNS = ['Backlog', 'In Progress', 'QA', 'Done'];
 
+const COLUMN_ACCENTS = {
+  Backlog: '#737373',
+  'In Progress': '#B8860B',
+  QA: '#3B4A6B',
+  Done: '#2F4F3E',
+};
+
 function TaskCard({ task, onDelete, isDragging = false }) {
   const isOverdue = new Date(task.dueDate) < new Date() && task.column !== 'Done';
   const formatDate = (d) =>
@@ -29,33 +36,66 @@ function TaskCard({ task, onDelete, isDragging = false }) {
 
   return (
     <div
-      className={`bg-white border border-[#E5E5E5] rounded p-3 ${
-        isDragging ? 'opacity-50' : ''
-      } transition-colors duration-150`}
+      style={{
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E5E5E5',
+        borderRadius: '6px',
+        padding: '12px',
+        opacity: isDragging ? 0.4 : 1,
+        transition: 'all 0.15s ease',
+        cursor: 'grab',
+      }}
+      onMouseEnter={(e) => {
+        if (!isDragging) e.currentTarget.style.borderColor = '#D4D4D4';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = '#E5E5E5';
+      }}
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <p className="text-sm font-medium text-[#171717] leading-snug">{task.title}</p>
-        <GripVertical size={14} className="text-[#D4D4D4] shrink-0 mt-0.5 cursor-grab" />
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '8px' }}>
+        <p style={{ fontSize: '13px', fontWeight: 500, color: '#171717', lineHeight: 1.4 }}>{task.title}</p>
+        <GripVertical size={14} style={{ color: '#D4D4D4', flexShrink: 0, marginTop: '2px' }} />
       </div>
       {task.description && (
-        <p className="text-xs text-[#737373] mb-2 line-clamp-2">{task.description}</p>
+        <p style={{ fontSize: '12px', color: '#737373', marginBottom: '8px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+          {task.description}
+        </p>
       )}
-      <div className="flex items-center gap-2 mb-2">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
         <StatusBadge status={task.priority} size="xs" />
-        <div className={`flex items-center gap-1 text-xs ${isOverdue ? 'text-[#991B1B]' : 'text-[#737373]'}`}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            fontSize: '11px',
+            color: isOverdue ? '#DC2626' : '#737373',
+          }}
+        >
           <Calendar size={10} />
           {formatDate(task.dueDate)}
-          {isOverdue && <span className="font-medium ml-0.5">Overdue</span>}
+          {isOverdue && <span style={{ fontWeight: 600, marginLeft: '2px' }}>Overdue</span>}
         </div>
       </div>
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-[#737373]">{task.assignee}</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '12px', color: '#737373' }}>{task.assignee}</span>
         <button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(task._id);
           }}
-          className="text-[#A3A3A3] hover:text-[#991B1B] transition-colors duration-150"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: '#A3A3A3',
+            padding: '2px',
+            display: 'flex',
+            alignItems: 'center',
+            transition: 'color 0.15s ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#DC2626'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#A3A3A3'; }}
           aria-label="Delete task"
         >
           <Trash2 size={12} />
@@ -89,23 +129,37 @@ function SortableTaskCard({ task, onDelete }) {
 
 function Column({ columnName, tasks, onDelete }) {
   const taskIds = tasks.map((t) => t._id);
+  const accentColor = COLUMN_ACCENTS[columnName] || '#737373';
 
   return (
-    <div className="flex-1 min-w-0">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-[#171717]">{columnName}</h3>
-          <span className="text-xs text-[#A3A3A3] tabular-nums">{tasks.length}</span>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: accentColor }} />
+          <h3 style={{ fontSize: '13px', fontWeight: 600, color: '#171717' }}>{columnName}</h3>
+          <span style={{ fontSize: '12px', color: '#A3A3A3', fontVariantNumeric: 'tabular-nums' }}>{tasks.length}</span>
         </div>
       </div>
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-        <div className="space-y-2 min-h-[200px] bg-[#FAFAFA] border border-[#E5E5E5] rounded p-2">
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            minHeight: '200px',
+            backgroundColor: '#F7F7F8',
+            border: '1px solid #E5E5E5',
+            borderRadius: '6px',
+            padding: '8px',
+            borderTop: `2px solid ${accentColor}`,
+          }}
+        >
           {tasks.map((task) => (
             <SortableTaskCard key={task._id} task={task} onDelete={onDelete} />
           ))}
           {tasks.length === 0 && (
-            <div className="flex items-center justify-center h-24">
-              <p className="text-xs text-[#A3A3A3]">No tasks</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80px' }}>
+              <p style={{ fontSize: '12px', color: '#A3A3A3' }}>No tasks</p>
             </div>
           )}
         </div>
@@ -191,23 +245,16 @@ export default function SprintBoard() {
     const draggedTask = tasks.find((t) => t._id === active.id);
     if (!draggedTask) return;
 
-    // Determine the target column
     let targetColumn = null;
-
-    // Check if dropped over another task
     const overTask = tasks.find((t) => t._id === over.id);
     if (overTask) {
       targetColumn = overTask.column;
     }
-
-    // If dropped over a column area (the SortableContext container)
     if (!targetColumn && COLUMNS.includes(over.id)) {
       targetColumn = over.id;
     }
-
     if (!targetColumn || targetColumn === draggedTask.column) return;
 
-    // Optimistic update
     setTasks((prev) =>
       prev.map((t) => (t._id === draggedTask._id ? { ...t, column: targetColumn } : t))
     );
@@ -216,7 +263,7 @@ export default function SprintBoard() {
       await taskApi.moveColumn(draggedTask._id, targetColumn);
     } catch (err) {
       console.error('Failed to move task:', err);
-      loadTasks(); // Revert on error
+      loadTasks();
     }
   };
 
@@ -240,8 +287,8 @@ export default function SprintBoard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-sm text-[#737373]">Loading sprint board...</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}>
+        <p className="micro-label">Loading sprint board...</p>
       </div>
     );
   }
@@ -253,7 +300,7 @@ export default function SprintBoard() {
         description="Track tasks across your sprint workflow"
         actions={
           <Button onClick={() => setShowCreate(true)}>
-            <Plus size={16} />
+            <Plus size={15} />
             New Task
           </Button>
         }
@@ -266,7 +313,7 @@ export default function SprintBoard() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-4 gap-4">
+        <div className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
           {COLUMNS.map((column) => (
             <Column
               key={column}
@@ -279,7 +326,7 @@ export default function SprintBoard() {
 
         <DragOverlay>
           {activeTask ? (
-            <div className="w-64">
+            <div style={{ width: '256px' }}>
               <TaskCard task={activeTask} onDelete={() => {}} />
             </div>
           ) : null}
@@ -288,62 +335,58 @@ export default function SprintBoard() {
 
       {/* Create task modal */}
       <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="New Task">
-        <form onSubmit={handleCreate} className="space-y-4">
+        <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="block text-sm font-medium text-[#171717] mb-1">Title</label>
+            <label htmlFor="task-title">Title</label>
             <input
               type="text"
               required
               value={createForm.title}
               onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
-              className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
               placeholder="Task title"
               id="task-title"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#171717] mb-1">Description</label>
+            <label htmlFor="task-description">Description</label>
             <textarea
               value={createForm.description}
               onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
               rows={3}
-              className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150 resize-none"
               placeholder="Task description..."
               id="task-description"
+              style={{ resize: 'none' }}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label className="block text-sm font-medium text-[#171717] mb-1">Assignee</label>
+              <label htmlFor="task-assignee">Assignee</label>
               <input
                 type="text"
                 required
                 value={createForm.assignee}
                 onChange={(e) => setCreateForm({ ...createForm, assignee: e.target.value })}
-                className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
                 placeholder="Assignee name"
                 id="task-assignee"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#171717] mb-1">Due Date</label>
+              <label htmlFor="task-duedate">Due Date</label>
               <input
                 type="date"
                 required
                 value={createForm.dueDate}
                 onChange={(e) => setCreateForm({ ...createForm, dueDate: e.target.value })}
-                className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
                 id="task-duedate"
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label className="block text-sm font-medium text-[#171717] mb-1">Priority</label>
+              <label htmlFor="task-priority">Priority</label>
               <select
                 value={createForm.priority}
                 onChange={(e) => setCreateForm({ ...createForm, priority: e.target.value })}
-                className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
                 id="task-priority"
               >
                 <option value="Low">Low</option>
@@ -352,11 +395,10 @@ export default function SprintBoard() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#171717] mb-1">Column</label>
+              <label htmlFor="task-column">Column</label>
               <select
                 value={createForm.column}
                 onChange={(e) => setCreateForm({ ...createForm, column: e.target.value })}
-                className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
                 id="task-column"
               >
                 {COLUMNS.map((col) => (
@@ -365,7 +407,7 @@ export default function SprintBoard() {
               </select>
             </div>
           </div>
-          <div className="flex justify-end gap-2 pt-2">
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', paddingTop: '4px' }}>
             <Button variant="secondary" onClick={() => setShowCreate(false)}>
               Cancel
             </Button>

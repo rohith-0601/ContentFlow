@@ -84,16 +84,16 @@ export default function ContentEditor() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-sm text-[#737373]">Loading...</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}>
+        <p className="micro-label">Loading...</p>
       </div>
     );
   }
 
   if (!asset) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-sm text-[#737373]">Content asset not found.</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}>
+        <p style={{ fontSize: '14px', color: '#737373' }}>Content asset not found.</p>
       </div>
     );
   }
@@ -106,48 +106,46 @@ export default function ContentEditor() {
         title="Edit Content"
         actions={
           <Button variant="ghost" onClick={() => navigate('/content')}>
-            <ArrowLeft size={16} />
+            <ArrowLeft size={15} />
             Back
           </Button>
         }
       />
 
-      <div className="grid grid-cols-3 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
         {/* Editor */}
-        <div className="col-span-2 space-y-4">
+        <div className="animate-fade-in">
           <Card>
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label className="block text-sm font-medium text-[#171717] mb-1">Title</label>
+                <label htmlFor="edit-title">Title</label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
                   id="edit-title"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#171717] mb-1">Owner</label>
+                <label htmlFor="edit-owner">Owner</label>
                 <input
                   type="text"
                   value={form.owner}
                   onChange={(e) => setForm({ ...form, owner: e.target.value })}
-                  className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
                   id="edit-owner"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#171717] mb-1">Body</label>
+                <label htmlFor="edit-body">Body</label>
                 <textarea
                   value={form.body}
                   onChange={(e) => setForm({ ...form, body: e.target.value })}
                   rows={12}
-                  className="w-full text-sm px-3 py-2 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150 resize-none leading-relaxed"
                   id="edit-body"
+                  style={{ resize: 'none', lineHeight: 1.7 }}
                 />
               </div>
-              <div className="flex justify-end">
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button onClick={handleSave} disabled={saving}>
                   <Save size={14} />
                   {saving ? 'Saving...' : 'Save Changes'}
@@ -157,45 +155,45 @@ export default function ContentEditor() {
           </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-4">
+        {/* Sidebar panel */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className="animate-fade-in" >
           {/* Status */}
           <Card>
-            <h3 className="text-sm font-semibold text-[#171717] mb-3">Status</h3>
-            <div className="mb-4">
+            <h3 className="section-label" style={{ marginBottom: '12px' }}>Status</h3>
+            <div style={{ marginBottom: '16px' }}>
               <StatusBadge status={asset.status} />
             </div>
 
             {actions.length > 0 && (
-              <div className="space-y-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div>
-                  <label className="block text-xs font-medium text-[#737373] mb-1">Changed by</label>
+                  <label style={{ fontSize: '12px', color: '#737373' }}>Changed by</label>
                   <input
                     type="text"
                     value={statusUser}
                     onChange={(e) => setStatusUser(e.target.value)}
                     placeholder={form.owner}
-                    className="w-full text-sm px-3 py-1.5 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150"
+                    style={{ padding: '7px 10px', fontSize: '13px' }}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#737373] mb-1">Comment (optional)</label>
+                  <label style={{ fontSize: '12px', color: '#737373' }}>Comment (optional)</label>
                   <textarea
                     value={statusComment}
                     onChange={(e) => setStatusComment(e.target.value)}
                     rows={2}
-                    className="w-full text-sm px-3 py-1.5 border border-[#E5E5E5] rounded bg-white text-[#171717] focus:outline-none focus:border-[#3B4A6B] transition-colors duration-150 resize-none"
                     placeholder="Add a comment..."
+                    style={{ resize: 'none', padding: '7px 10px', fontSize: '13px' }}
                   />
                 </div>
-                <div className="flex flex-col gap-2">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {actions.map((action) => (
                     <Button
                       key={action.nextStatus}
                       variant={action.variant}
                       size="sm"
                       onClick={() => handleStatusChange(action.nextStatus)}
-                      className="w-full"
+                      style={{ width: '100%' }}
                     >
                       {action.label}
                     </Button>
@@ -207,28 +205,44 @@ export default function ContentEditor() {
 
           {/* History */}
           <Card>
-            <h3 className="text-sm font-semibold text-[#171717] mb-3">History</h3>
-            <div className="space-y-3">
+            <h3 className="section-label" style={{ marginBottom: '12px' }}>History</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
               {[...asset.history].reverse().map((entry, i) => (
                 <div
                   key={i}
-                  className={`relative pl-5 pb-3 ${
-                    i < asset.history.length - 1 ? 'border-l border-[#E5E5E5]' : ''
-                  }`}
+                  style={{
+                    position: 'relative',
+                    paddingLeft: '20px',
+                    paddingBottom: '16px',
+                    borderLeft: i < asset.history.length - 1 ? '1px solid #E5E5E5' : '1px solid transparent',
+                    marginLeft: '4px',
+                  }}
                 >
-                  <div className="absolute left-0 top-0.5 w-2 h-2 rounded-full bg-[#D4D4D4] -translate-x-1/2" />
-                  <div className="flex items-center gap-2 mb-0.5">
+                  {/* Timeline dot */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: '-4px',
+                      top: '2px',
+                      width: '7px',
+                      height: '7px',
+                      borderRadius: '50%',
+                      backgroundColor: '#D4D4D4',
+                      border: '2px solid #FFFFFF',
+                    }}
+                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <StatusBadge status={entry.status} size="xs" />
                   </div>
-                  <p className="text-xs text-[#737373] mt-1">
+                  <p style={{ fontSize: '12px', color: '#737373', marginTop: '4px' }}>
                     {entry.changedBy}
                   </p>
                   {entry.comment && (
-                    <p className="text-xs text-[#A3A3A3] mt-0.5 italic">
+                    <p style={{ fontSize: '12px', color: '#A3A3A3', marginTop: '2px', fontStyle: 'italic' }}>
                       {entry.comment}
                     </p>
                   )}
-                  <p className="text-xs text-[#A3A3A3] mt-0.5 flex items-center gap-1">
+                  <p style={{ fontSize: '11px', color: '#A3A3A3', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Clock size={10} />
                     {formatDateTime(entry.timestamp)}
                   </p>
