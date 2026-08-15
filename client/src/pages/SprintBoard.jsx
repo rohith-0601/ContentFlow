@@ -147,6 +147,8 @@ function Column({ columnName, tasks, onDelete }) {
             flexDirection: 'column',
             gap: '8px',
             minHeight: '200px',
+            maxHeight: 'calc(100vh - 250px)',
+            overflowY: 'auto',
             backgroundColor: '#F7F7F8',
             border: '1px solid #E5E5E5',
             borderRadius: '6px',

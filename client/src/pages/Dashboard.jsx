@@ -231,7 +231,7 @@ export default function Dashboard() {
             No recent activity.
           </p>
         ) : (
-          <div>
+          <div style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '8px' }}>
             {data.recentActivity.map((entry, i) => (
               <div
                 key={i}

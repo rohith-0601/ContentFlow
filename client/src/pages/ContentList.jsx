@@ -124,17 +124,18 @@ export default function ContentList() {
             <p style={{ fontSize: '14px', color: '#737373' }}>No content assets found.</p>
           </div>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Owner</th>
-                <th>Updated</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+          <div style={{ maxHeight: 'calc(100vh - 250px)', overflowY: 'auto' }}>
+            <table>
+              <thead style={{ position: 'sticky', top: 0, backgroundColor: '#FFFFFF', zIndex: 10, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <tr>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Owner</th>
+                  <th>Updated</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
               {assets.map((asset) => (
                 <tr key={asset._id}>
                   <td>
@@ -186,6 +187,7 @@ export default function ContentList() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </Card>
 

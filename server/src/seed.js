@@ -201,12 +201,51 @@ async function seed() {
     await Task.deleteMany({});
     console.log('Cleared existing data');
 
-    // Insert seed data
-    await ContentAsset.insertMany(contentAssets);
-    console.log(`Inserted ${contentAssets.length} content assets`);
+    // Generate lots of data based on existing templates
+    const manyContentAssets = [];
+    const manyTasks = [];
+    const owners = ['Sarah Chen', 'Marcus Johnson', 'Emily Rodriguez', 'David Kim', 'Lisa Wang', 'James Park'];
+    const statuses = ['Draft', 'In Review', 'Approved', 'Published'];
+    
+    for (let i = 0; i < 200; i++) {
+        const baseAsset = contentAssets[i % contentAssets.length];
+        const randomOwner = owners[Math.floor(Math.random() * owners.length)];
+        const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+        manyContentAssets.push({
+            ...baseAsset,
+            title: `${baseAsset.title} - Variation ${i + 1}`,
+            owner: randomOwner,
+            status: randomStatus
+        });
+    }
 
-    await Task.insertMany(tasks);
-    console.log(`Inserted ${tasks.length} tasks`);
+    const priorities = ['High', 'Medium', 'Low'];
+    const columns = ['Backlog', 'In Progress', 'QA', 'Done'];
+    for (let i = 0; i < 300; i++) {
+        const baseTask = tasks[i % tasks.length];
+        const randomAssignee = owners[Math.floor(Math.random() * owners.length)];
+        const randomPriority = priorities[Math.floor(Math.random() * priorities.length)];
+        const randomColumn = columns[Math.floor(Math.random() * columns.length)];
+        
+        let dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + (Math.floor(Math.random() * 60) - 30)); // +/- 30 days
+
+        manyTasks.push({
+            ...baseTask,
+            title: `${baseTask.title} (Task ${i + 1})`,
+            assignee: randomAssignee,
+            priority: randomPriority,
+            column: randomColumn,
+            dueDate: dueDate
+        });
+    }
+
+    // Insert seed data
+    await ContentAsset.insertMany(manyContentAssets);
+    console.log(`Inserted ${manyContentAssets.length} content assets`);
+
+    await Task.insertMany(manyTasks);
+    console.log(`Inserted ${manyTasks.length} tasks`);
 
     console.log('Seed completed successfully');
     process.exit(0);
